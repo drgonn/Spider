@@ -26,7 +26,7 @@ class UrlManager(object):
 		for url in urls:
 			self.add_new_url(url)
 
-	def new_url_size(selfself):
+	def new_url_size(self):
 		return len(self.new_urls)
 
 	def old_url_size(self):

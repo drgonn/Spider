@@ -11,7 +11,7 @@ class HtmlParser(object):
         #param  下载的url和内容
         if page_url is None or html_cont is None:
             return
-        soup = BeautifulSoup(html_cont,'html.parse',from_encoding='utf-8')
+        soup = BeautifulSoup(html_cont,'html.parser')
         new_urls = self._get_new_urls(page_url,soup)
         new_data = self._get_new_data(page_url,soup)
         return new_urls,new_data
