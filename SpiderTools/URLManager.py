@@ -1,23 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding=UTF-8 -*-
+import pickle
+import hashlib
+
 
 class UrlManager(object):
 	def __init__(self):
-		self.new_urls = set()  #未爬取的URL
-		self.old_urls = set()  #已经爬取的URL集和
+		self.new_urls = self.load_progress('new_urls.txt')  #未爬取的URL
+		self.old_urls = self.load_progress('old_urls.txt')  #已经爬取的URL集和
 
 	def has_new_url(self):  #判断是否有未爬取的URL
 		return self.new_url_size() != 0
 
 	def get_new_url(self):  #获取一个URL
 		new_url = self.new_urls.pop()
-		self.old_urls.add(new_url)
+		m = hashlib.md5()
+		m.update(new_url)
+		self.old_urls.add(m.hexdigest()[8:-8])
 		return new_url
 
 	def add_new_url(self,url):
 		if url is None:
 			return
-		if url not in self.new_urls and url not in self.old_urls:
+		m =hashlib.md5()
+		m.update(new_url)
+		url_md5 = m.hexdigest()[8:-8]
+		if url not in self.new_urls and url_md5 not in self.old_urls:
 			self.new_urls.add(url)
 
 	def add_new_urls(self,urls):
@@ -32,6 +40,19 @@ class UrlManager(object):
 	def old_url_size(self):
 		return(len(self.old_urls))
 
+	def save_progress(self,path,data):   #保存进度
+		with open(path,'wb') as f:
+			pickle.dump(data,f)     #cpickle 已经在p3中改成pickle
+
+	def load_progress(self,path):
+		print('[+] 从文件加载进度： %s ' %path)
+		try:
+			with open(path,'rb') as f:
+				tmp = pickle.load(f)
+				return tmp
+		except:
+			print('[!] 无进度文件，创建：%s' %path)
+		return set()
 
 
 
