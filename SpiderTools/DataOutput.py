@@ -27,7 +27,7 @@ class DataOutput(object):
         fout.close()
 
     def output_html(self,path):
-        fout=codecs.open('baike.html','a',encoding='utf-8')
+        fout=codecs.open(path,'a',encoding='utf-8')
         for data in self.datas:
             fout.write("<tr>")
             fout.write("<td>%s</td>"%data['url'])

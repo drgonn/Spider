@@ -5,10 +5,10 @@ from SpiderTools.DataOutput import DataOutput
 from SpiderTools.HtmlDownloader import HtmlDownloader
 from SpiderTools.HtmlParser import HtmlParser
 from SpiderTools.URLManager import UrlManager
-from multiprocessing.managers import BaseManager
-from multiprocessing import Process
+from multiprocessing.managers import BaseManager,SyncManager
+from multiprocessing import Process,Queue
 import random,time
-from queue import Queue
+# from queue import Queue
 
 class SpiderMan(object):
     def __init__(self):
@@ -48,12 +48,18 @@ class NodeManager(object):
         while True:
             while(url_manager.has_new_url()):
                 new_url = url_manager.get_new_url()
+                print(new_url)
                 url_q.put(new_url)
+                # url_q.put("I love you")
+                # print(url_q.get(True))
+                # print(url_q.get(True))
+                # print(url_q.get(True))
                 print('old_url=',url_manager.old_url_size())#
-                if (url_manager.old_url_size()>20):
+                if (url_manager.old_url_size()>2000):
                     url_q.put('end')
                     print("控制节点爬满2000结束！")
                     url_manager.save_progress('new_urls.txt',url_manager.new_urls)
+                    url_manager.save_progress('old_urls.txt',url_manager.old_urls)
                     return
             try:
                 if not conn_q.empty():
@@ -104,21 +110,14 @@ if __name__ == "__main__":
     url_manager_proc = Process(target=node.url_manager_proc,args=(url_q,conn_q,root_url,))
     result_solve_proc = Process(target=node.result_solve_proc,args=(result_q,conn_q,store_q,))
     store_proc = Process(target=node.store_proc,args=(store_q,))
-    manager_run = Process(target=manager.start)
+    # manager_run = Process(target=manager.start)
 
 
-    manager.start()
-    # manager_run.start()
-    time.sleep(5)
-   # manager.join()
-    # store_proc.start()
-    # print("1 start")
-    # time.sleep(5)
-    # url_manager_proc.start()
-    # print("2 start")
+    # manager.start()
+    store_proc.start()
+    url_manager_proc.start()
+    result_solve_proc.start()
+    manager.get_server().serve_forever()
     # time.sleep(10)
-    # # result_solve_proc.start()
-    # # print("3 start")
-    # # time.sleep(15)
-    # print("4 start")
+
 

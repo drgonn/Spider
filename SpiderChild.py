@@ -4,10 +4,10 @@
 
 from SpiderTools.HtmlDownloader import HtmlDownloader
 from SpiderTools.HtmlParser import HtmlParser
-from multiprocessing.managers import BaseManager
-from multiprocessing import Process
+from multiprocessing.managers import BaseManager,SyncManager
+from multiprocessing import Process,Queue
 import random,time
-from queue import Queue
+# from queue import Queue
 
 class QueueManager(BaseManager):
     pass
@@ -26,18 +26,14 @@ class SpiderChild(object):
         self.task = self.m.get_task_queue()
         self.result = self.m.get_result_queue()
         self.downloader = HtmlDownloader()
-        self.parser = HtmlParser
+        self.parser = HtmlParser()
         print('Init finished')
 
 
     def crawl(self):
         while (True):
             try:
-                print(self.task.empty())
-                time.sleep(1)
                 if not self.task.empty():
-                    print(self.task.empty())
-                    print("OKOKOKOKOKOKOK")
                     url = self.task.get(True)
                     if url == 'end':
                         print('控制节点通知爬虫节点停止工作。')
@@ -45,6 +41,7 @@ class SpiderChild(object):
                         return
                     print('爬虫节点正在解析：%s'%url)
                     content = self.downloader.download(url)
+                    print (content[:100])
                     new_urls,data = self.parser.parser(url,content)
                     self.result.put({"new_urls":new_urls,"data":data})
             except EOFError as e:
