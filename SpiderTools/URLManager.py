@@ -15,7 +15,7 @@ class UrlManager(object):
 	def get_new_url(self):  #获取一个URL
 		new_url = self.new_urls.pop()
 		m = hashlib.md5()
-		m.update(new_url)
+		m.update(new_url.encode('utf-8'))
 		self.old_urls.add(m.hexdigest()[8:-8])
 		return new_url
 
@@ -23,7 +23,7 @@ class UrlManager(object):
 		if url is None:
 			return
 		m =hashlib.md5()
-		m.update(new_url)
+		m.update(url.encode('utf-8'))
 		url_md5 = m.hexdigest()[8:-8]
 		if url not in self.new_urls and url_md5 not in self.old_urls:
 			self.new_urls.add(url)
