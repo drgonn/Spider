@@ -2,7 +2,7 @@
 # -*- coding=UTF-8 -*-
 
 
-import re
+import re,json
 import urllib.parse
 from bs4 import BeautifulSoup
 
@@ -33,6 +33,52 @@ class HtmlParser(object):
         summary=soup.find('div',class_='lemma-summary')
         data['summary'] = summary.get_text()
         return data
+
+    #爬取电影
+    def parser_url(self,page_url,response):
+        pattern = re.compile(r'http://movie.mtime.com/(\d+)/')
+        urls = pattern.findall(response)
+        if urls != None:
+            return list(set(urls))
+        else:
+            return None
+
+    def parser_json(selfself,page_url,response):
+        pattern = re.compile(r'=(.*?);')
+        result = pattern.findall(resopnse)[0]
+        if result!=None:
+            value=json.loads(result)
+            try:
+                isRelease = value.get('value').get('isRelease')
+            except Exception as e:
+                print(e)
+                return None
+            if isRelease:
+                if value.get('value').get('hotValue')==None:
+                    return self._parser_release(page_url,value)
+                else:
+                    return self._parser_no_release(page_url,value,isRelease=2)
+            else:
+                return self._parser_release(page_url,value)
+
+    def _parser_release(selfself,page_url,value):
+        try:
+            isRelease = 1
+            movieRating = value.get('value').get('movieRating')
+            boxOffice = value.get('value').get('boxOffice')
+            movieTitle = value.get('value').get('movieTitle')
+            RPictureFinal=movieRating.get('RPictureFinal')
+            RStoryFinal = movieRating.get('RStoryFinal')
+            RDirectorFinal = movieRating.get('RDirectorFinal')
+            ROtherFinal = movieRating.get('ROtherFinal')
+            RatingFinal = movieRating.get('RatingFinal')
+
+
+
+
+
+
+
 
 
 
