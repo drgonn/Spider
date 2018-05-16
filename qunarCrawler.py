@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 import codecs
 
 driver = webdriver.Firefox()
+# driver = webdriver.PhantomJS()
+
 driver.set_window_size(1080, 1080)
 driver.get("http://hotel.qunar.com/")
 assert '去哪儿网' in driver.title
@@ -32,12 +34,10 @@ ele_search = driver.find_element_by_class_name(
 
 
 ele_toCity.clear()
-print(11111)
 ele_toCity.send_keys(toCity)
 ele_toCity.click()
 ele_search.click()
 # elem.send_keys(Keys.RETURN)
-
 
 try:
     WebDriverWait(driver,10).until(EC.title_contains(toCity))
@@ -45,16 +45,15 @@ except Exception as e:
     print(e)
     # break
 time.sleep(5)
-
 js = "window.scrollTo(0,document.body.scrollHeight);"
 driver.execute_script(js)
 time.sleep(5)
 htm_const=driver.page_source
-
-
 soup = BeautifulSoup(htm_const,'html.parser')
+
 infos = soup.find_all(class_='item_hotel_info')
 f = codecs.open(toCity+'.html','a')
+
 for info in infos:
     f.write('--'*20)
     content = info.get_text().replace(" ","").replace("\t","").strip()
