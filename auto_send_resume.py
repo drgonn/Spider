@@ -104,12 +104,14 @@ class send_resume():
 					touguo = False
 
 				if not touguo:
-					send= driver.find_elements_by_xpath(".//div[@class='detail-op']")[1].find_element_by_tag_name("a")
-					send.click()
-					time.sleep(5)
-					print("guanbibiaoqian")
+					try:
+						send= driver.find_elements_by_xpath(".//div[@class='detail-op']")[1].find_element_by_tag_name("a")
+						send.click()
+						time.sleep(2)
+					except Exception as e:
+						print(e,"漏过")
 
-					time.sleep(5)
+					time.sleep(2)
 					print("send OK")
 					driver.close()
 					driver.switch_to.window(windows[0])
